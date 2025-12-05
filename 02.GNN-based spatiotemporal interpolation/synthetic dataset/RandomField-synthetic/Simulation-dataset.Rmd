@@ -1,0 +1,69 @@
+---
+title: "Simulation dataset"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(RandomFields)
+library(stats)
+```
+
+
+```{r}
+RFoptions(seed=0)  ## *Any* simulation will have the random seed 0; set `NA` to make them all random again
+
+# Unconditional simulation
+RFgetModelNames(type="positive definite", domain="single variable",
+                iso="isotropic") 
+
+#model <- RMexp(var=5, scale=10) + # with variance 4 and scale 10
+# RMnugget(var=1) + # nugget
+# RMtrend(mean=0.5) # and mean
+
+model <- RMexp()
+
+# define the locations
+from <- 0
+to <- 12
+x.seq <- seq(from, to, length=100)
+y.seq <- seq(from, to, length=100)
+
+simu <- RFsimulate(model, x=x.seq, y=y.seq)  # This is the unconditional simulation
+plot(simu, simu)
+```
+
+```{r}
+RFoptions(seed=0)
+
+
+# First, define the locations
+from <- 0
+to <- 12
+x.seq <- seq(from, to, length=100)
+y.seq <- seq(from, to, length=100)
+
+n = 10000
+X <- runif(n)  # generate uniform random deviates [0, 1]
+Z <- runif(n)
+U <- rbinom(n, 1, p=0.5)
+Y <- X*U + Z*(1-U)
+XY <- cbind(X,Y)  # The n by 2 matrix of bivariate (x, y)
+
+# simu = RFsimulate(model=model, x=x.seq, y=y.seq)
+# plot(simu, simu)
+```
+```{r}
+X.r2 <- array(X, dim=c(100,100))
+```
+
+
+```{r}
+image(x.seq, y.seq, z=X.r2*6.5 + 1)
+box()
+```
+
+

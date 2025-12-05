@@ -1,0 +1,49 @@
+---
+title: "R Notebook"
+author: Shiqi
+date: 2021/4/8
+output: html_notebook
+---
+
+```{r load-library}
+library(gstat)
+library(sp)
+library(readxl)
+library(rgeos)
+library(spacetime)
+```
+```{r import-data}
+data = readxl::read_excel("synthetic dataset/RandomField-synthetic/zeroAuto_zeroHete_reshaped.xlsx")
+head(data)
+```
+First, we need to create TIME type for data.time
+```{r}
+paste(data$time[1])
+data$TIME <- as.POSIXct(data$time, origin="2021-01-01")
+```
+```{r}
+coordinates(data) <- ~x+y  # to concate lat and lng
+```
+```{r}
+head(data)
+```
+```{r}
+data_sp <- SpatialPoints(data@coords)
+```
+```{r}
+data_time <- data$TIME
+data_df <- data.frame(ppb=data$t0)
+```
+```{r}
+data_stidf <- STIDF(data_sp, data_time, data=data_df)
+```
+```{r}
+stplot(data_stidf)
+```
+
+```{r}
+var <- variogramST(ppb~1, data=data_stidf, assumeRegular = F, na.omit=T)
+```
+```{r}
+memory.limit()
+```
